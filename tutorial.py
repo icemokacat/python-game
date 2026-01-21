@@ -154,3 +154,34 @@ for index, alien in enumerate(aliens):
     if index == 1:
         print("Breaking the loop at index 1")
         break
+
+# 5. 클래스
+print("==================")
+
+class Car:
+    def __init__(self, color, speed=0):
+        self.color = color
+        self.speed = speed
+
+    def accelerate(self):
+        self.speed += 10
+        print(f"현재 속도: {self.speed} km/h")
+
+    def brake(self):
+        self.speed -= 10
+        if self.speed < 0:
+            self.speed = 0
+        print(f"현재 속도: {self.speed} km/h")
+
+# 객체 생성
+my_car = Car("red")
+my_car.accelerate()
+my_car.brake()
+
+your_car = Car("blue", 50)
+your_car.accelerate()
+your_car.brake()
+
+carList = [my_car, your_car]
+for index, car in enumerate(carList):
+    print(f"Car {index} is {car.color} with speed {car.speed} km/h")
