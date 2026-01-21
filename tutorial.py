@@ -108,3 +108,49 @@ def sum(a,b):
 
 result = sum(10, 20)
 print("Sum result:", result)
+
+# 3. 조건문
+
+n1 = 10
+n2 = 20
+
+if n1 < n2:
+    print(n1, "is less than", n2)
+elif n1 == n2:
+    print(n1, "is equal to", n2)
+else:
+    print(n1, "is greater than", n2)
+
+a = None
+if a is None:
+    print("a is None")
+else:
+    print("a is not None")
+
+# 4. 반복문
+print("===================")
+
+a = None
+i = 1
+while a is None:
+    print("a is not None")
+    i = i + 1
+    if i > 5:
+        a = 123
+
+print("end")
+
+for i in range(5):
+    print("Iteration:", i)
+
+aliens = ["alien1", "alien2", "alien3"]
+for alien in aliens:
+    print("Alien:", alien)
+
+print("==================")
+for index, alien in enumerate(aliens):
+    print("Alien", index, "is", alien)
+    # break
+    if index == 1:
+        print("Breaking the loop at index 1")
+        break
