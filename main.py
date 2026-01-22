@@ -9,7 +9,7 @@ print("Startup")
 # pygame setup
 pygame.init()
 # enable key repeat for held keys
-pygame.key.set_repeat(500, 500)
+pygame.key.set_repeat(100, 100)
 # create window
 surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 # set frame rate init
@@ -31,28 +31,44 @@ for y in range(8):
 # 게임 루프
 while True:
 
-    print("Update")
+    ### 고정적으로 (변동없이 계속 실행되는 부분 ###
+
+    # 배경을 검정색으로 칠함
+    surface.fill((0, 0, 0))
+    fighter.draw(surface)
+
+    # 모든 외계인 그리기
+    for alien in aliens:
+        alien.draw(surface)
+
+    direction = 0
+    # print("Update")
+
+    ### 이벤트 처리 부분 ###
+
     for event in pygame.event.get():
+        # 종료 이벤트 처리
         if event.type == pygame.QUIT:
             print("Shutdown")
             pygame.quit()
             exit()
             break
+        # 키보드  이벤트 처리
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                fighter.direction = -1
+            elif event.key == pygame.K_RIGHT:
+                fighter.direction = 1
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                fighter.direction = 0
 
-    print("Render")
-    # 배경을 검정색으로 칠함
-    surface.fill((0, 0, 0))
-    # pygame.draw.rect(surface, (0, 255, 0), (10, 10, 100, 100))
-    # blit 이란 말은 'block image transfer' 의 줄임말로,
-    # 한 표면에서 다른 표면으로 이미지를 복사하는 것을 의미합니다.
-    # fighter 초기 위치에 그리기
-    #surface.blit(fighter.image, (fighter.x, fighter.y))
-    fighter.draw(surface)
-    # alien 초기 위치에 그리기
-    # surface.blit(scale_up_alien_image, (init_alien_x, init_alien_y))
-    for alien in aliens:
-        alien.draw(surface)
+    ### Render ###
+
+    # 프레임률 설정
+    delta_seconds = clock.tick(FPS) / 1000
+    # 이동
+    fighter.move(delta_seconds)
+
     # 그리고 업데이트 (반영)
     pygame.display.update()
-    # 프레임률 설정
-    clock.tick(FPS)

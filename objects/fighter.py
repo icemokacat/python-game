@@ -12,6 +12,11 @@ class Fighter:
         # 초기 위치 설정
         self.x = SCREEN_WIDTH / 2 - self.image.get_width() / 2
         self.y = SCREEN_HEIGHT - self.image.get_height() - 20
+        self.speed = 100
+        self.direction = 0
 
     def draw(self, _surface):
         _surface.blit(self.image, (self.x, self.y))
+
+    def move(self, delta_seconds):
+        self.x = self.x + self.direction * self.speed * delta_seconds
