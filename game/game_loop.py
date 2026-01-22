@@ -12,22 +12,53 @@ pygame.init()
 # enable key repeat for held keys
 pygame.key.set_repeat(500, 500)
 # create window
-surface = pygame.display.set_mode((640, 480))
+window_x = 640
+window_y = 480
+surface = pygame.display.set_mode((window_x, window_y))
 # set frame rate init
 # 이후 게임 루프에서 매 프레임마다 clock.tick(프레임률) 호출 필요
 clock = pygame.time.Clock()
 
 # image setup
-image_path = os.path.join(PROJECT_ROOT, "assets", "images", "fighter.png")
-image = pygame.image.load(image_path)
+fighter_image_name = "fighter.png"
+fighter_image_path = os.path.join(PROJECT_ROOT, "assets", "images", fighter_image_name)
+fighter_image = pygame.image.load(fighter_image_path)
+
+alien_image_name = "alien1.png"
+alien_image_path = os.path.join(PROJECT_ROOT, "assets", "images", alien_image_name)
+alien_image = pygame.image.load(alien_image_path)
+
 # 이미지 크기 조정 (옵션)
-origin_image_width = image.get_width()
-origin_image_height = image.get_height()
+# 파이터
+origin_image_width = fighter_image.get_width()
+origin_image_height = fighter_image.get_height()
 scale_up_image = pygame.transform.scale(
-    image,
-    (origin_image_width * 10, origin_image_height * 10)
+    fighter_image,
+    (origin_image_width * 2, origin_image_height * 2)
+)
+# 외계인
+origin_alien_width = alien_image.get_width()
+origin_alien_height = alien_image.get_height()
+scale_up_alien_image = pygame.transform.scale(
+    alien_image,
+    (origin_alien_width * 2, origin_alien_height * 2)
 )
 
+# 파이터 초기 위치
+init_x = window_x / 2 - scale_up_image.get_width() / 2
+init_y = window_y - scale_up_image.get_height() - 20
+
+# 외계인 초기 위치
+init_alien_x = 70
+init_alien_y = 100
+
+# 여러 외계인 위치 리스트
+alien_pos = []
+for i in range(4):
+    for j in range(3):
+        alien_pos.append( (init_alien_x + 50*i, init_alien_y + 70*j) )
+
+# 게임 루프
 while True:
 
     print("Update")
@@ -44,7 +75,12 @@ while True:
     # pygame.draw.rect(surface, (0, 255, 0), (10, 10, 100, 100))
     # blit 이란 말은 'block image transfer' 의 줄임말로,
     # 한 표면에서 다른 표면으로 이미지를 복사하는 것을 의미합니다.
-    surface.blit(scale_up_image, (100, 200))
+    # fighter 초기 위치에 그리기
+    surface.blit(scale_up_image, (init_x, init_y))
+    # alien 초기 위치에 그리기
+    # surface.blit(scale_up_alien_image, (init_alien_x, init_alien_y))
+    for pos in alien_pos:
+        surface.blit(scale_up_alien_image, pos)
     # 그리고 업데이트 (반영)
     pygame.display.update()
     # 프레임률 설정
