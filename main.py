@@ -50,10 +50,6 @@ while True:
     for alien in aliens:
         alien.draw(surface)
 
-        bomb = alien.shoot()
-        if bomb is not None:
-            bombs.append(bomb)
-
     # 모든 bombs 그리기
     for bomb in bombs:
         bomb.draw(surface)
@@ -98,6 +94,11 @@ while True:
     # 모든 외계인 이동
     for alien in aliens:
         alien.update(delta_seconds)
+
+        # 외계인 bomb 투척
+        bomb = alien.shoot()
+        if bomb is not None:
+            bombs.append(bomb)
 
     # bombs 투척
     for bomb in bombs:
