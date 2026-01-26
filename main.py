@@ -1,5 +1,4 @@
 import pygame
-import utils.assetUtils as assetUtils
 from objects.beam import Beam
 from objects.fighter import Fighter
 from objects.alien import Alien
@@ -18,17 +17,19 @@ surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 
 # image setup
-fighter = Fighter(assetUtils.get_asset_image_path("fighter.png"))
+fighter = Fighter()
 beam = None
 
 # 여러 외계인 리스트
 aliens = []
 for y in range(4):
     for x in range(5):
-        alien_instance = Alien(assetUtils.get_asset_image_path("alien1.png"))
+        alien_instance = Alien()
         alien_instance.x = 100 + x * 50
         alien_instance.y = 60 + y * 70
         aliens.append(alien_instance)
+
+bombs = []
 
 # 게임 루프
 while True:
@@ -45,6 +46,14 @@ while True:
     # 모든 외계인 그리기
     for alien in aliens:
         alien.draw(surface)
+
+        bomb = alien.shoot()
+        if bomb is not None:
+            bombs.append(bomb)
+
+    # 모든 bombs 그리기
+    for bomb in bombs:
+        bomb.draw(surface)
 
     direction = 0
     # print("Update")
@@ -67,7 +76,7 @@ while True:
                 fighter.direction_x = 1
             elif event.key == pygame.K_z:
                 if beam is None:
-                    beam = Beam(assetUtils.get_asset_image_path("beam.png"), fighter.x + fighter.image.get_width() / 2, fighter.y)
+                    beam = Beam( fighter.x + fighter.image.get_width() / 2 , fighter.y)
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 fighter.direction_x = 0
@@ -82,6 +91,13 @@ while True:
     # 모든 외계인 이동
     for alien in aliens:
         alien.update(delta_seconds)
+
+    # bombs 투척
+    for bomb in bombs:
+        bomb.update(delta_seconds)
+        # 화면 밖으로 나가면 제거
+        if SCREEN_HEIGHT < bomb.y:
+            bombs.remove(bomb)
 
     # beam 이 존재하면 업데이트
     if beam is not None:

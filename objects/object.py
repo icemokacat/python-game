@@ -1,9 +1,10 @@
 import pygame
+import utils.assetUtils as assetUtils
 
 class Object:
-    def __init__(self, image_path):
+    def __init__(self, image_name):
         # 이미지 로드
-        origin_image = pygame.image.load(image_path)
+        origin_image = pygame.image.load(assetUtils.get_asset_image_path(image_name))
         # 이미지 크기 조정 (옵션)
         self.image = pygame.transform.scale(
             origin_image,
