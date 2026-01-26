@@ -12,7 +12,7 @@ class Fighter:
         # 초기 위치 설정
         self.x = SCREEN_WIDTH / 2 - self.image.get_width() / 2
         self.y = SCREEN_HEIGHT - self.image.get_height() - 20
-        self.speed = 100
+        self.speed = 200
         self.direction = 0
 
     def draw(self, _surface):

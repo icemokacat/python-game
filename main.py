@@ -21,7 +21,7 @@ fighter = Fighter(assetUtils.get_asset_image_path("fighter.png"))
 
 # 여러 외계인 리스트
 aliens = []
-for y in range(8):
+for y in range(4):
     for x in range(5):
         alien_instance = Alien(assetUtils.get_asset_image_path("alien1.png"))
         alien_instance.x = 100 + x * 50
@@ -69,6 +69,20 @@ while True:
     delta_seconds = clock.tick(FPS) / 1000
     # 이동
     fighter.move(delta_seconds)
+
+    # 모든 외계인 이동
+    for alien in aliens:
+        alien.move(delta_seconds)
+
+    # 방향 전환이 필요한 경우
+    if Alien.should_change_direction:
+        Alien.should_change_direction = False
+
+        for alien in aliens:
+            # 반대로
+            alien.direction *= -1
+            # 아래로 약간 이동
+            alien.y += 50
 
     # 그리고 업데이트 (반영)
     pygame.display.update()
