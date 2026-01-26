@@ -7,7 +7,7 @@ class Alien(Object):
         # 이미지 로드
         super().__init__(image_path)
         self.speed = 100
-        self.direction = 1
+        self.direction_x = 1
 
     def update(self, delta_seconds):
         super().update(delta_seconds)

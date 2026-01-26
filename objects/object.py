@@ -13,13 +13,15 @@ class Object:
         self.x = 0
         self.y = 0
         self.speed = 200
-        self.direction = 0
+        self.direction_x = 0
+        self.direction_y = 0
 
     def draw(self, _surface):
         _surface.blit(self.image, (self.x, self.y))
 
     def update(self, delta_seconds):
-        self.move(self.direction * self.speed * delta_seconds, 0)
+        self.move(self.direction_x * self.speed * delta_seconds,
+                  self.direction_y * self.speed * delta_seconds)
 
     def move(self, delta_x, delta_y):
         self.x += delta_x

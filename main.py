@@ -1,5 +1,6 @@
 import pygame
 import objects.assetUtils as assetUtils
+from objects.beam import Beam
 from objects.fighter import Fighter
 from objects.alien import Alien
 from constants import *
@@ -18,6 +19,7 @@ clock = pygame.time.Clock()
 
 # image setup
 fighter = Fighter(assetUtils.get_asset_image_path("fighter.png"))
+beam = None
 
 # 여러 외계인 리스트
 aliens = []
@@ -36,6 +38,9 @@ while True:
     # 배경을 검정색으로 칠함
     surface.fill((0, 0, 0))
     fighter.draw(surface)
+    # beam 이 존재하면 그리기
+    if beam is not None:
+        beam.draw(surface)
 
     # 모든 외계인 그리기
     for alien in aliens:
@@ -57,12 +62,15 @@ while True:
         # 키보드  이벤트 처리
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                fighter.direction = -1
+                fighter.direction_x = -1
             elif event.key == pygame.K_RIGHT:
-                fighter.direction = 1
+                fighter.direction_x = 1
+            elif event.key == pygame.K_z:
+                if beam is None:
+                    beam = Beam(assetUtils.get_asset_image_path("beam.png"), fighter.x + fighter.image.get_width()/2, fighter.y)
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                fighter.direction = 0
+                fighter.direction_x = 0
 
     ### Render ###
 
@@ -75,13 +83,20 @@ while True:
     for alien in aliens:
         alien.update(delta_seconds)
 
+    # beam 이 존재하면 업데이트
+    if beam is not None:
+        beam.update(delta_seconds)
+        if beam.y < 0:
+            # 화면 밖으로 나가면 beam 제거
+            beam = None
+
     # 방향 전환이 필요한 경우
     if Alien.should_change_direction:
         Alien.should_change_direction = False
 
         for alien in aliens:
             # 반대로
-            alien.direction *= -1
+            alien.direction_x *= -1
             # 아래로 약간 이동
             alien.move(0, 50)
 
