@@ -1,5 +1,5 @@
 import pygame
-import objects.assetUtils as assetUtils
+import utils.assetUtils as assetUtils
 from objects.beam import Beam
 from objects.fighter import Fighter
 from objects.alien import Alien
@@ -67,7 +67,7 @@ while True:
                 fighter.direction_x = 1
             elif event.key == pygame.K_z:
                 if beam is None:
-                    beam = Beam(assetUtils.get_asset_image_path("beam.png"), fighter.x + fighter.image.get_width()/2, fighter.y)
+                    beam = Beam(assetUtils.get_asset_image_path("beam.png"), fighter.x + fighter.image.get_width() / 2, fighter.y)
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 fighter.direction_x = 0
