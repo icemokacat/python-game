@@ -1,7 +1,9 @@
 import pygame
+
 from objects.beam import Beam
 from objects.fighter import Fighter
 from objects.alien import Alien
+from objects.explosion import Explosion
 from constants import *
 
 print("Startup")
@@ -30,11 +32,12 @@ for y in range(4):
         aliens.append(alien_instance)
 
 bombs = []
+explosions = []
 
 # 게임 루프
 while True:
 
-    ### 고정적으로 (변동없이 계속 실행되는 부분 ###
+    ### Render ###
 
     # 배경을 검정색으로 칠함
     surface.fill((0, 0, 0))
@@ -54,6 +57,10 @@ while True:
     # 모든 bombs 그리기
     for bomb in bombs:
         bomb.draw(surface)
+
+    # 모든 explosions 그리기
+    for explosion in explosions:
+        explosion.draw(surface)
 
     direction = 0
     # print("Update")
@@ -81,7 +88,7 @@ while True:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 fighter.direction_x = 0
 
-    ### Render ###
+    ### Update ###
 
     # 프레임률 설정
     delta_seconds = clock.tick(FPS) / 1000
@@ -99,12 +106,24 @@ while True:
         if SCREEN_HEIGHT < bomb.y:
             bombs.remove(bomb)
 
+    # explosions 업데이트
+    for explosion in explosions:
+        explosion.update(delta_seconds)
+        if explosion.is_finished():
+            explosions.remove(explosion)
+
     # beam 이 존재하면 업데이트
     if beam is not None:
         beam.update(delta_seconds)
         if beam.y < 0:
             # 화면 밖으로 나가면 beam 제거
             beam = None
+        else:
+            dead_alien = beam.check_collision(aliens)
+            if dead_alien is not None:
+                explosions.append(Explosion(dead_alien.rect))
+                aliens.remove(dead_alien)
+                beam = None
 
     # 방향 전환이 필요한 경우
     if Alien.should_change_direction:

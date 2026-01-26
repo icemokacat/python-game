@@ -17,6 +17,10 @@ class Object:
         self.direction_x = 0
         self.direction_y = 0
 
+    @property
+    def rect(self):
+        return pygame.Rect(self.x, self.y, self.image.get_width(), self.image.get_height())
+
     def draw(self, _surface):
         _surface.blit(self.image, (self.x, self.y))
 
@@ -27,3 +31,9 @@ class Object:
     def move(self, delta_x, delta_y):
         self.x += delta_x
         self.y += delta_y
+
+    def check_collision(self, others):
+        for other in others:
+            if self.rect.colliderect(other.rect):
+                return other
+        return None
