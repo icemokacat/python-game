@@ -68,11 +68,11 @@ while True:
     # 프레임률 설정
     delta_seconds = clock.tick(FPS) / 1000
     # 이동
-    fighter.move(delta_seconds)
+    fighter.update(delta_seconds)
 
     # 모든 외계인 이동
     for alien in aliens:
-        alien.move(delta_seconds)
+        alien.update(delta_seconds)
 
     # 방향 전환이 필요한 경우
     if Alien.should_change_direction:
@@ -82,7 +82,7 @@ while True:
             # 반대로
             alien.direction *= -1
             # 아래로 약간 이동
-            alien.y += 50
+            alien.move(0, 50)
 
     # 그리고 업데이트 (반영)
     pygame.display.update()
