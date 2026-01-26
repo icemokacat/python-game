@@ -100,6 +100,18 @@ while True:
         if bomb is not None:
             bombs.append(bomb)
 
+        # 외계인 -> fighter 충돌 체크
+        if alien.check_collision([fighter]) is not None:
+            # 외계인 폭발
+            explosions.append(Explosion(alien.rect))
+            # fighter 폭발
+            explosions.append(Explosion(fighter.rect))
+            # 외계인 제거
+            aliens.remove(alien)
+
+            print("Game Over")
+            break
+
     # bombs 투척
     for bomb in bombs:
         bomb.update(delta_seconds)
