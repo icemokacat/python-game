@@ -105,6 +105,12 @@ while True:
         # 화면 밖으로 나가면 제거
         if SCREEN_HEIGHT < bomb.y:
             bombs.remove(bomb)
+        else:
+            if bomb.check_collision([fighter]) is not None:
+                explosions.append(Explosion(fighter.rect))
+                bombs.remove(bomb)
+                print("Game Over")
+                break
 
     # explosions 업데이트
     for explosion in explosions:
