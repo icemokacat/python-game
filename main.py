@@ -5,6 +5,7 @@ from objects.fighter import Fighter
 from objects.alien import Alien
 from objects.explosion import Explosion
 from constants import *
+from utils.mixerContainer import MixerContainer
 
 print("Startup")
 
@@ -33,6 +34,9 @@ for y in range(4):
 
 bombs = []
 explosions = []
+
+# sound setup
+soundMixer = MixerContainer()
 
 # 게임 루프
 while True:
@@ -73,13 +77,17 @@ while True:
             break
         # 키보드  이벤트 처리
         if event.type == pygame.KEYDOWN:
+            # 왼쪽 이동
             if event.key == pygame.K_LEFT:
                 fighter.direction_x = -1
+            # 오른쪽 이동
             elif event.key == pygame.K_RIGHT:
                 fighter.direction_x = 1
+            # 빔
             elif event.key == pygame.K_z:
                 if beam is None:
                     beam = Beam( fighter.x + fighter.image.get_width() / 2 , fighter.y)
+                    soundMixer.shoot_sound.play()
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 fighter.direction_x = 0
@@ -108,6 +116,7 @@ while True:
             explosions.append(Explosion(fighter.rect))
             # 외계인 제거
             aliens.remove(alien)
+            soundMixer.explosion_sound.play()
 
             print("Game Over")
             break
@@ -122,6 +131,7 @@ while True:
             if bomb.check_collision([fighter]) is not None:
                 explosions.append(Explosion(fighter.rect))
                 bombs.remove(bomb)
+                soundMixer.explosion_sound.play()
                 print("Game Over")
                 break
 
@@ -143,6 +153,7 @@ while True:
                 explosions.append(Explosion(dead_alien.rect))
                 aliens.remove(dead_alien)
                 beam = None
+                soundMixer.invaderKilled_sound.play()
 
     # 방향 전환이 필요한 경우
     if Alien.should_change_direction:
