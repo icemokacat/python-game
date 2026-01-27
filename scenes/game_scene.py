@@ -17,6 +17,7 @@ class GameScene(BaseScene):
         self.bombs      = []
         self.explosions = []
         self.beams      = []
+        self.score      = 0
 
         # sound setup
         self.soundMixer = MixerContainer()
@@ -33,6 +34,7 @@ class GameScene(BaseScene):
 
     def on_end(self):
         print("GameScene: on_end called")
+        self.score = 0
         self.fighter = None
         self.aliens.clear()
         self.bombs.clear()
@@ -87,7 +89,10 @@ class GameScene(BaseScene):
                 self.soundMixer.explosion_sound.play()
 
                 print("Game Over")
-                SceneManager.instance.change(GAME_OVER_SCENE_NAME)
+                data = {
+                    "score": self.score
+                }
+                SceneManager.instance.change(GAME_OVER_SCENE_NAME,data)
                 break
 
         # bombs 투척
@@ -102,7 +107,10 @@ class GameScene(BaseScene):
                     self.bombs.remove(bomb)
                     self.soundMixer.explosion_sound.play()
                     print("Game Over")
-                    SceneManager.instance.change(GAME_OVER_SCENE_NAME)
+                    data = {
+                        "score": self.score
+                    }
+                    SceneManager.instance.change(GAME_OVER_SCENE_NAME,data)
                     break
 
         # explosions 업데이트
@@ -124,10 +132,15 @@ class GameScene(BaseScene):
                     self.aliens.remove(dead_alien)
                     self.beams.remove(beam)
                     self.soundMixer.invaderKilled_sound.play()
+                    self.add_score(10)
+                    print("Score:", self.score)
 
                     if len(self.aliens) <= 0:
                         print("You Win!")
-                        SceneManager.instance.change(GAME_CLEAR_SCENE_NAME)
+                        data = {
+                            "score": self.score
+                        }
+                        SceneManager.instance.change(GAME_CLEAR_SCENE_NAME,data)
                     break
 
         # 방향 전환이 필요한 경우
@@ -139,6 +152,10 @@ class GameScene(BaseScene):
                 alien.direction_x *= -1
                 # 아래로 약간 이동
                 alien.move(0, 50)
+
+    # score 얻기
+    def add_score(self, point):
+        self.score += point
 
     # Rendering
     def on_render(self, surface):

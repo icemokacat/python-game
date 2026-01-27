@@ -20,3 +20,6 @@ class BaseScene:
 
     def on_end_event(self):
         pass
+
+    def set_data(self, data):
+        pass
