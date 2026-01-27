@@ -12,7 +12,7 @@ print("Startup")
 # pygame setup
 pygame.init()
 # enable key repeat for held keys
-pygame.key.set_repeat(100, 100)
+pygame.key.set_repeat(100, 200)
 # create window
 surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 # set frame rate init
@@ -34,6 +34,7 @@ for y in range(4):
 
 bombs = []
 explosions = []
+beams = []
 
 # sound setup
 soundMixer = MixerContainer()
@@ -46,8 +47,9 @@ while True:
     # 배경을 검정색으로 칠함
     surface.fill((0, 0, 0))
     fighter.draw(surface)
+
     # beam 이 존재하면 그리기
-    if beam is not None:
+    for beam in beams:
         beam.draw(surface)
 
     # 모든 외계인 그리기
@@ -85,8 +87,9 @@ while True:
                 fighter.direction_x = 1
             # 빔
             elif event.key == pygame.K_z:
-                if beam is None:
-                    beam = Beam( fighter.x + fighter.image.get_width() / 2 , fighter.y)
+                if len(beams) < 3:
+                    new_beam = Beam(fighter.x + fighter.image.get_width() / 2, fighter.y)
+                    beams.append(new_beam)
                     soundMixer.shoot_sound.play()
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
@@ -142,17 +145,17 @@ while True:
             explosions.remove(explosion)
 
     # beam 이 존재하면 업데이트
-    if beam is not None:
+    for beam in beams:
         beam.update(delta_seconds)
         if beam.y < 0:
             # 화면 밖으로 나가면 beam 제거
-            beam = None
+            beams.remove(beam)
         else:
             dead_alien = beam.check_collision(aliens)
             if dead_alien is not None:
                 explosions.append(Explosion(dead_alien.rect))
                 aliens.remove(dead_alien)
-                beam = None
+                beams.remove(beam)
                 soundMixer.invaderKilled_sound.play()
 
     # 방향 전환이 필요한 경우
