@@ -1,10 +1,13 @@
 import pygame
+import time
 
+from objects import ufo
 from objects.beam import Beam
 from objects.alien import Alien
 from objects.fighter import Fighter
 from objects.explosion import Explosion
 from constants import *
+from objects.ufo import Ufo
 from scenes.base_scene import BaseScene
 from scenes.scene_manager import SceneManager
 from utils.mixerContainer import MixerContainer
@@ -13,6 +16,7 @@ class GameScene(BaseScene):
     def __init__(self):
         # 비행기 세팅
         self.fighter    = None
+        self.ufo        = None
         self.aliens     = []
         self.bombs      = []
         self.explosions = []
@@ -22,11 +26,15 @@ class GameScene(BaseScene):
         # sound setup
         self.soundMixer = MixerContainer()
 
+        # time set
+        self.start_time = None
+
     def on_begin(self):
         print("GameScene: on_begin called")
+        self.start_time = time.monotonic()
         self.fighter = Fighter()
-        for y in range(1):
-            for x in range(1):
+        for y in range(4):
+            for x in range(5):
                 alien_instance = Alien()
                 alien_instance.x = 100 + x * 50
                 alien_instance.y = 60 + y * 70
@@ -36,6 +44,7 @@ class GameScene(BaseScene):
         print("GameScene: on_end called")
         self.score = 0
         self.fighter = None
+        self.ufo = None
         self.aliens.clear()
         self.bombs.clear()
         self.explosions.clear()
@@ -51,6 +60,11 @@ class GameScene(BaseScene):
         # 빔
         elif key == pygame.K_z:
             self.beam_event()
+
+    # UFO 생성 이벤트
+    def ufo_event(self):
+        self.ufo = Ufo()
+        self.soundMixer.ufo_lowpitch_sound.play()
 
     # 빔 생성 이벤트
     def beam_event(self):
@@ -68,6 +82,19 @@ class GameScene(BaseScene):
     def on_update(self, delta_seconds):
         # 이동
         self.fighter.update(delta_seconds)
+
+        # 시간 체크 후 10초 마다 UFO 생성
+        current_time = time.monotonic()
+        if self.ufo is None and (current_time - self.start_time) >= 3:
+            self.ufo_event()
+            self.start_time = current_time
+
+        # UFO 업데이트
+        if self.ufo is not None:
+            self.ufo.update(delta_seconds)
+            # 화면 밖으로 나가면 제거
+            if SCREEN_WIDTH < self.ufo.x:
+                self.ufo = None
 
         # 모든 외계인 업데이트
         for alien in self.aliens:
@@ -127,6 +154,7 @@ class GameScene(BaseScene):
                 self.beams.remove(beam)
             else:
                 dead_alien = beam.check_collision(self.aliens)
+                # Beam to 외계인
                 if dead_alien is not None:
                     self.explosions.append(Explosion(dead_alien.rect))
                     self.aliens.remove(dead_alien)
@@ -141,6 +169,15 @@ class GameScene(BaseScene):
                             "score": self.score
                         }
                         SceneManager.instance.change(GAME_CLEAR_SCENE_NAME,data)
+                    break
+                # Beam to UFO
+                if self.ufo is not None and beam.check_collision([self.ufo]) is not None:
+                    self.explosions.append(Explosion(self.ufo.rect))
+                    self.ufo = None
+                    self.beams.remove(beam)
+                    self.soundMixer.ufo_highpitch_sound.play()
+                    self.add_score(1000)
+                    print("Score:", self.score)
                     break
 
         # 방향 전환이 필요한 경우
@@ -177,6 +214,10 @@ class GameScene(BaseScene):
         # 모든 explosions 그리기
         for explosion in self.explosions:
             explosion.draw(surface)
+
+        # UFO 존재하면 그리기
+        if self.ufo is not None:
+            self.ufo.draw(surface)
 
     def on_end_event(self):
         print("GameScene: on_end_event called")
