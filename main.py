@@ -2,6 +2,7 @@ import pygame
 
 from constants import *
 from scenes.game_scene import GameScene
+from scenes.home_scene import HomeScene
 
 print("Startup")
 
@@ -18,7 +19,8 @@ clock = pygame.time.Clock()
 # 게임 루프
 
 ## scene setup ##
-scene = GameScene()
+#scene = GameScene()
+scene = HomeScene()
 scene.on_begin()
 
 while True:
