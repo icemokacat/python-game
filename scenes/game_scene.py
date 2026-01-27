@@ -6,34 +6,38 @@ from objects.fighter import Fighter
 from objects.explosion import Explosion
 from constants import *
 from scenes.base_scene import BaseScene
+from scenes.scene_manager import SceneManager
 from utils.mixerContainer import MixerContainer
 
 class GameScene(BaseScene):
     def __init__(self):
         # 비행기 세팅
-        self.fighter = Fighter()
-
-        # 여러 외계인 리스트
-        self.aliens = []
-        for y in range(4):
-            for x in range(5):
-                alien_instance = Alien()
-                alien_instance.x = 100 + x * 50
-                alien_instance.y = 60 + y * 70
-                self.aliens.append(alien_instance)
-
-        self.bombs = []
+        self.fighter    = None
+        self.aliens     = []
+        self.bombs      = []
         self.explosions = []
-        self.beams = []
+        self.beams      = []
 
         # sound setup
         self.soundMixer = MixerContainer()
 
     def on_begin(self):
         print("GameScene: on_begin called")
+        self.fighter = Fighter()
+        for y in range(1):
+            for x in range(1):
+                alien_instance = Alien()
+                alien_instance.x = 100 + x * 50
+                alien_instance.y = 60 + y * 70
+                self.aliens.append(alien_instance)
 
     def on_end(self):
         print("GameScene: on_end called")
+        self.fighter = None
+        self.aliens.clear()
+        self.bombs.clear()
+        self.explosions.clear()
+        self.beams.clear()
 
     def on_key_down(self, key):
         # 왼쪽 이동
@@ -83,6 +87,7 @@ class GameScene(BaseScene):
                 self.soundMixer.explosion_sound.play()
 
                 print("Game Over")
+                SceneManager.instance.change(GAME_OVER_SCENE_NAME)
                 break
 
         # bombs 투척
@@ -97,6 +102,7 @@ class GameScene(BaseScene):
                     self.bombs.remove(bomb)
                     self.soundMixer.explosion_sound.play()
                     print("Game Over")
+                    SceneManager.instance.change(GAME_OVER_SCENE_NAME)
                     break
 
         # explosions 업데이트
@@ -118,6 +124,11 @@ class GameScene(BaseScene):
                     self.aliens.remove(dead_alien)
                     self.beams.remove(beam)
                     self.soundMixer.invaderKilled_sound.play()
+
+                    if len(self.aliens) <= 0:
+                        print("You Win!")
+                        SceneManager.instance.change(GAME_CLEAR_SCENE_NAME)
+                    break
 
         # 방향 전환이 필요한 경우
         if Alien.should_change_direction:
