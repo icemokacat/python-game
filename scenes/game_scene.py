@@ -1,7 +1,6 @@
 import pygame
 import time
 
-from objects import ufo
 from objects.beam import Beam
 from objects.alien import Alien
 from objects.fighter import Fighter
@@ -60,6 +59,9 @@ class GameScene(BaseScene):
         # 빔
         elif key == pygame.K_z:
             self.beam_event()
+        # 벙커 (테스트 용)
+        elif key == pygame.K_x:
+            self.fighter.set_bunker()
 
     # UFO 생성 이벤트
     def ufo_event(self):
@@ -129,6 +131,14 @@ class GameScene(BaseScene):
             if SCREEN_HEIGHT < bomb.y:
                 self.bombs.remove(bomb)
             else:
+                # bomb -> bunker 충돌 체크
+                if self.fighter.get_bunker() is not None:
+                    if bomb.check_collision([self.fighter.get_bunker()]) is not None:
+                        # 벙커 데미지 처리
+                        self.fighter.get_bunker().damage()
+                        # 처리후 bomb 제거
+                        self.bombs.remove(bomb)
+                # bomb -> fighter 충돌 체크
                 if bomb.check_collision([self.fighter]) is not None:
                     self.explosions.append(Explosion(self.fighter.rect))
                     self.bombs.remove(bomb)
@@ -149,6 +159,11 @@ class GameScene(BaseScene):
         # beam 이 존재하면 업데이트
         for beam in self.beams:
             beam.update(delta_seconds)
+            if self.fighter.get_bunker() is not None:
+                # beam -> bunker 충돌 체크
+                if beam.check_collision([self.fighter.get_bunker()]) is not None:
+                    # 데미지 없이 beam 제거
+                    self.beams.remove(beam)
             if beam.y < 0:
                 # 화면 밖으로 나가면 beam 제거
                 self.beams.remove(beam)
@@ -178,6 +193,8 @@ class GameScene(BaseScene):
                     self.soundMixer.ufo_highpitch_sound.play()
                     self.add_score(1000)
                     print("Score:", self.score)
+                    # UFO 격추시 벙커 획득
+                    self.fighter.set_bunker()
                     break
 
         # 방향 전환이 필요한 경우

@@ -1,4 +1,3 @@
-from constants import *
 from objects.object import Object
 
 class Ufo(Object):
